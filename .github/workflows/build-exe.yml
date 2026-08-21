@@ -20,11 +20,11 @@ jobs:
       - name: Compile PS1 to EXE
         shell: pwsh
         run: |
-          Invoke-ps2exe -inputFile "Battery_Health_Zenbook.ps1" `
-                         -outputFile "BatteryHealth.exe" `
+          Invoke-ps2exe -inputFile "Battery_Health_Checker.ps1" `
+                         -outputFile "BatteryHealthChecker.exe" `
                          -noConsole `
-                         -title "Battery Health" `
-                         -description "Salute batteria - ASUS Zenbook"
+                         -title "Battery Health Checker" `
+                         -description "Verifica salute batteria"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
