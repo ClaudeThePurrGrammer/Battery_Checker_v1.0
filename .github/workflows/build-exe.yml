@@ -23,9 +23,9 @@ jobs:
       - name: Verify PS1 file exists
         shell: pwsh
         run: |
-          if (Test-Path "Battery Healt Checker.ps1") {
+          if (Test-Path "Battery Health Checker.ps1") {
             Write-Host "✓ File found!"
-            Get-Item "Battery Health Checker.ps1" | Select-Object FullName, Length
+            Get-Item "Battery Healt Checker.ps1" | Select-Object FullName, Length
           } else {
             Write-Host "✗ File NOT found!"
             Get-ChildItem -Recurse -Filter "*.ps1"
@@ -39,7 +39,7 @@ jobs:
                          -outputFile "BatteryHealth.exe" `
                          -noConsole `
                          -title "Battery Health" `
-                         -description "Salute batteria " `
+                         -description "Salute batteria" `
                          -verbose
 
       - name: Verify EXE was created
