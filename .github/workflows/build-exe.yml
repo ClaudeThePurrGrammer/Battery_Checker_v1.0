@@ -25,7 +25,7 @@ jobs:
         run: |
           if (Test-Path "Battery_Health_Checker.ps1") {
             Write-Host "✓ File found!"
-            Get-Item "Battery Healt Checker.ps1" | Select-Object FullName, Length
+            Get-Item "Battery_Healt_Checker.ps1" | Select-Object FullName, Length
           } else {
             Write-Host "✗ File NOT found!"
             Get-ChildItem -Recurse -Filter "*.ps1"
