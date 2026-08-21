@@ -6,6 +6,9 @@ on:
       - "v*"
   workflow_dispatch: {}
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -17,14 +20,39 @@ jobs:
         shell: pwsh
         run: Install-Module -Name ps2exe -Force -Scope CurrentUser
 
+      - name: Verify PS1 file exists
+        shell: pwsh
+        run: |
+          if (Test-Path "Battery Healt Checker.ps1") {
+            Write-Host "✓ File found!"
+            Get-Item "Battery Health Checker.ps1" | Select-Object FullName, Length
+          } else {
+            Write-Host "✗ File NOT found!"
+            Get-ChildItem -Recurse -Filter "*.ps1"
+            exit 1
+          }
+
       - name: Compile PS1 to EXE
         shell: pwsh
         run: |
-          Invoke-ps2exe -inputFile "Battery_Health_Checker.ps1" `
-                         -outputFile "BatteryHealthChecker.exe" `
+          Invoke-ps2exe -inputFile "Battery Health Checker.ps1" `
+                         -outputFile "BatteryHealth.exe" `
                          -noConsole `
-                         -title "Battery Health Checker" `
-                         -description "Verifica salute batteria"
+                         -title "Battery Health" `
+                         -description "Salute batteria " `
+                         -verbose
+
+      - name: Verify EXE was created
+        shell: pwsh
+        run: |
+          if (Test-Path "BatteryHealth.exe") {
+            Write-Host "✓ EXE created successfully!"
+            Get-Item "BatteryHealth.exe" | Select-Object FullName, Length
+          } else {
+            Write-Host "✗ EXE creation FAILED!"
+            Get-ChildItem -Recurse -Filter "*.exe"
+            exit 1
+          }
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
