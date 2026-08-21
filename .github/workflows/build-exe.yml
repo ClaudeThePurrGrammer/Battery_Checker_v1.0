@@ -38,6 +38,7 @@ jobs:
           Invoke-ps2exe -inputFile "Battery_Health_Checker.ps1" `
                          -outputFile "BatteryHealth.exe" `
                          -noConsole `
+                         -icon "battery-icon.ico" `
                          -title "Battery Health" `
                          -description "Salute batteria" `
                          -verbose

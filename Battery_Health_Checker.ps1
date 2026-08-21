@@ -1,4 +1,4 @@
-# Battery Health - ASUS Zenbook / Windows 11
+﻿# Battery Health - ASUS Zenbook / Windows 11
 # Stile card moderno, finestra senza barra titolo.
 # Gauge: arco statico (Path), gia' verificato accurato. Animazione limitata
 # all'apertura della card (fade + scala), che non ha dato problemi finora.
@@ -93,7 +93,7 @@ try {
     } else {
         $lightningVisibility = "Collapsed"
         if ($currentCharge -ge 20) {
-            $chargeColor = "#FFFFFFFF" # Bianco iOS
+            $chargeColor = "{DynamicResource BatteryDischargingBrush}" # Adattivo: bianco in dark, nero in light
             $chargeStatusText = "Su batteria"
         } elseif ($currentCharge -ge 10) {
             $chargeColor = "#FFFFD60A" # Giallo iOS
@@ -180,10 +180,11 @@ try {
           <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid x:Name="DragHandle" Grid.Row="0" Height="20" Background="Transparent" Margin="0,0,0,4">
-          <!-- Bottone Tema Dark/Light -->
-          <Button x:Name="ThemeButton" Width="28" Height="28"
-                  HorizontalAlignment="Left" VerticalAlignment="Top"
+        <Grid x:Name="DragHandle" Grid.Row="0" Height="32" Background="Transparent" Margin="0,0,0,8">
+          <!-- Bottone Tema Dark/Light: slider animato stile iOS -->
+          <Button x:Name="ThemeButton" Width="52" Height="28"
+                  HorizontalAlignment="Left" VerticalAlignment="Center"
+                  FocusVisualStyle="{x:Null}"
                   Cursor="Hand">
             <Button.Template>
               <ControlTemplate TargetType="Button">
@@ -192,30 +193,50 @@ try {
                 </Grid>
               </ControlTemplate>
             </Button.Template>
-            <!-- L'icona iniziale è la Luna (&#xE708;) perché partiamo in Dark Mode -->
-            <TextBlock x:Name="ThemeIcon" Text="&#xE708;" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" 
-                       FontFamily="Segoe MDL2 Assets" RenderTransformOrigin="0.5,0.5"
-                       HorizontalAlignment="Center" VerticalAlignment="Center">
-              <TextBlock.Style>
-                <Style TargetType="TextBlock">
+            <Grid x:Name="SwitchVisual" Width="52" Height="28" RenderTransformOrigin="0.5,0.5">
+              <Grid.RenderTransform>
+                <ScaleTransform ScaleX="1" ScaleY="1"/>
+              </Grid.RenderTransform>
+              <Grid.Style>
+                <Style TargetType="Grid">
                   <Style.Triggers>
                     <DataTrigger Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource AncestorType=Button}}" Value="True">
-                      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
                       <Setter Property="RenderTransform">
-                        <Setter.Value>
-                          <ScaleTransform ScaleX="1.25" ScaleY="1.25"/>
-                        </Setter.Value>
+                        <Setter.Value><ScaleTransform ScaleX="1.08" ScaleY="1.08"/></Setter.Value>
                       </Setter>
                     </DataTrigger>
                   </Style.Triggers>
                 </Style>
-              </TextBlock.Style>
-            </TextBlock>
+              </Grid.Style>
+
+              <Border x:Name="SwitchTrack" CornerRadius="14" BorderThickness="1.2" BorderBrush="#FF48484A">
+                <Border.Style>
+                  <Style TargetType="Border">
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource AncestorType=Button}}" Value="True">
+                        <Setter Property="BorderBrush" Value="White"/>
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </Border.Style>
+              </Border>
+
+              <Ellipse x:Name="SwitchKnob" Width="22" Height="22" Fill="White"
+                       HorizontalAlignment="Left" VerticalAlignment="Center" Margin="3,0,0,0">
+                <Ellipse.Effect>
+                  <DropShadowEffect Color="Black" BlurRadius="6" ShadowDepth="1" Opacity="0.4"/>
+                </Ellipse.Effect>
+                <Ellipse.RenderTransform>
+                  <TranslateTransform x:Name="KnobTranslate" X="0"/>
+                </Ellipse.RenderTransform>
+              </Ellipse>
+            </Grid>
           </Button>
 
           <!-- Bottone Chiusura -->
           <Button x:Name="CloseButton" Width="28" Height="28"
-                  HorizontalAlignment="Right" VerticalAlignment="Top"
+                  HorizontalAlignment="Right" VerticalAlignment="Center"
+                  FocusVisualStyle="{x:Null}"
                   Cursor="Hand">
             <Button.Template>
               <ControlTemplate TargetType="Button">
@@ -288,7 +309,7 @@ try {
           <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock Text="$health%" FontSize="42" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"
                        HorizontalAlignment="Center" FontFamily="Segoe UI Variable Display, Segoe UI"/>
-            <TextBlock Text="capacita' massima" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
+            <TextBlock Text="Capacità Massima" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
                        HorizontalAlignment="Center" FontFamily="Segoe UI Variable Text, Segoe UI"/>
           </StackPanel>
         </Grid>
@@ -305,13 +326,13 @@ try {
         <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="0,4"/>
         <Grid Margin="0,7">
           <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-          <TextBlock Grid.Column="0" Text="Capacita' attuale" Foreground="{DynamicResource TextSecondaryBrush}" FontFamily="Segoe UI Variable Text, Segoe UI"/>
+          <TextBlock Grid.Column="0" Text="Capacità attuale" Foreground="{DynamicResource TextSecondaryBrush}" FontFamily="Segoe UI Variable Text, Segoe UI"/>
           <TextBlock Grid.Column="1" Text="$([math]::Round($full,0).ToString('N0')) mWh" Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Right" FontFamily="Segoe UI Variable Text, Segoe UI"/>
         </Grid>
         <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="0,4"/>
         <Grid Margin="0,7">
           <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-          <TextBlock Grid.Column="0" Text="Capacita' originale" Foreground="{DynamicResource TextSecondaryBrush}" FontFamily="Segoe UI Variable Text, Segoe UI"/>
+          <TextBlock Grid.Column="0" Text="Capacità originale" Foreground="{DynamicResource TextSecondaryBrush}" FontFamily="Segoe UI Variable Text, Segoe UI"/>
           <TextBlock Grid.Column="1" Text="$([math]::Round($design,0).ToString('N0')) mWh" Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Right" FontFamily="Segoe UI Variable Text, Segoe UI"/>
         </Grid>
         <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="0,4"/>
@@ -329,38 +350,73 @@ try {
     $reader = New-Object System.Xml.XmlNodeReader $xaml
     $window = [System.Windows.Markup.XamlReader]::Load($reader)
 
+    # Icona finestra (taskbar/Alt-Tab). Utile quando lo script gira come .ps1
+    # non compilato - la versione .exe compilata con ps2exe ha gia' l'icona
+    # incorporata nel file stesso. Avvolto in try/catch: se il file manca
+    # (es. .ps1 spostato senza l'icona accanto) l'app funziona comunque.
+    try {
+        $iconPath = Join-Path $PSScriptRoot "battery-icon.ico"
+        if (Test-Path $iconPath) {
+            $window.Icon = New-Object System.Windows.Media.Imaging.BitmapImage (New-Object System.Uri($iconPath))
+        }
+    } catch { }
+
     # Associazione eventi pulsante chiusura
     $closeBtn = $window.FindName("CloseButton")
     $closeBtn.Add_Click({ $window.Close() })
 
-    # Associazione eventi pulsante Tema (Luna/Sole)
+    # Associazione eventi pulsante Tema (slider animato Dark/Light)
     $themeBtn = $window.FindName("ThemeButton")
-    $themeIcon = $window.FindName("ThemeIcon")
+    $knobTranslate = $window.FindName("KnobTranslate")
+    $switchTrack    = $window.FindName("SwitchTrack")
+
+    # Assicura che il background del track sia un SolidColorBrush indipendente e animabile
+    $switchTrack.Background = New-Object System.Windows.Media.SolidColorBrush `
+        ([System.Windows.Media.Color]::FromRgb(0x39,0x39,0x3D))
+
     $script:isDarkMode = $true
+
+    $darkTheme  = @{
+        CardBgBrush = "#FF1C1C1E"; InnerCardBgBrush = "#FF2C2C2E"; TextPrimaryBrush = "#FFFFFFFF"
+        TextSecondaryBrush = "#FF8E8E93"; SeparatorBrush = "#FF2C2C2E"; BatteryDischargingBrush = "#FFFFFFFF"
+    }
+    $lightTheme = @{
+        CardBgBrush = "#FFF2F2F7"; InnerCardBgBrush = "#FFFFFFFF"; TextPrimaryBrush = "#FF000000"
+        TextSecondaryBrush = "#FF6C6C70"; SeparatorBrush = "#FFE5E5EA"; BatteryDischargingBrush = "#FF000000"
+    }
+    $trackColorDark  = "#FF39393D"
+    $trackColorLight = "#FFD1D1D6"
+    $knobOffsetLight = 24.0  # spostamento a destra in modalita' chiara
+
+    function Start-ColorAnim($brush, [string]$hex, [double]$seconds) {
+        $target = [System.Windows.Media.ColorConverter]::ConvertFromString($hex)
+        $anim = New-Object System.Windows.Media.Animation.ColorAnimation
+        $anim.To = $target
+        $anim.Duration = New-Object System.Windows.Duration ([TimeSpan]::FromSeconds($seconds))
+        $anim.EasingFunction = New-Object System.Windows.Media.Animation.CubicEase
+        $brush.BeginAnimation([System.Windows.Media.SolidColorBrush]::ColorProperty, $anim)
+    }
+
     $themeBtn.Add_Click({
-        if ($script:isDarkMode) {
-            # Passa a Light Mode (Stile chiaro iOS)
-            $window.Resources["CardBgBrush"] = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FFF2F2F7")
-            $window.Resources["InnerCardBgBrush"] = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FFFFFFFF")
-            $window.Resources["TextPrimaryBrush"] = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FF000000")
-            $window.Resources["TextSecondaryBrush"] = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FF6C6C70")
-            $window.Resources["SeparatorBrush"] = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FFE5E5EA")
-            $window.Resources["BatteryDischargingBrush"] = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FF000000")
-            $themeIcon.Text = [char]0xE706 # Sole (MDL2 Assets) per la modalità Light
-            $themeIcon.FontSize = 13       # Il Sole necessita di una dimensione leggermente maggiore per bilanciamento visivo
-            $script:isDarkMode = $false
-        } else {
-            # Passa a Dark Mode (Stile scuro iOS)
-            $window.Resources["CardBgBrush"] = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FF1C1C1E")
-            $window.Resources["InnerCardBgBrush"] = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FF2C2C2E")
-            $window.Resources["TextPrimaryBrush"] = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FFFFFFFF")
-            $window.Resources["TextSecondaryBrush"] = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FF8E8E93")
-            $window.Resources["SeparatorBrush"] = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FF2C2C2E")
-            $window.Resources["BatteryDischargingBrush"] = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FFFFFFFF")
-            $themeIcon.Text = [char]0xE708 # Luna (MDL2 Assets) per la modalità Dark
-            $themeIcon.FontSize = 11       # La Luna ha un peso visivo maggiore, perciò la riduciamo leggermente
-            $script:isDarkMode = $true
+        $targetTheme = if ($script:isDarkMode) { $lightTheme } else { $darkTheme }
+        foreach ($key in $targetTheme.Keys) {
+            Start-ColorAnim $window.Resources[$key] $targetTheme[$key] 0.3
         }
+
+        $targetTrackHex = if ($script:isDarkMode) { $trackColorLight } else { $trackColorDark }
+        Start-ColorAnim $switchTrack.Background $targetTrackHex 0.3
+
+        $targetKnobX = if ($script:isDarkMode) { $knobOffsetLight } else { 0.0 }
+        $knobAnim = New-Object System.Windows.Media.Animation.DoubleAnimation
+        $knobAnim.To = $targetKnobX
+        $knobAnim.Duration = New-Object System.Windows.Duration ([TimeSpan]::FromSeconds(0.3))
+        $knobEase = New-Object System.Windows.Media.Animation.BackEase
+        $knobEase.EasingMode = [System.Windows.Media.Animation.EasingMode]::EaseOut
+        $knobEase.Amplitude = 0.3
+        $knobAnim.EasingFunction = $knobEase
+        $knobTranslate.BeginAnimation([System.Windows.Media.TranslateTransform]::XProperty, $knobAnim)
+
+        $script:isDarkMode = -not $script:isDarkMode
     })
 
     # Permette il trascinamento della finestra
@@ -371,4 +427,11 @@ try {
 }
 catch {
     Show-ErrorBox "Si e' verificato un errore imprevisto:`n`n$($_.Exception.Message)`n`nRiga: $($_.InvocationInfo.ScriptLineNumber)"
+}
+finally {
+    # Pulizia: elimina il report HTML generato da powercfg, sia in caso di
+    # chiusura normale sia in caso di errore, cosi' non resta nessun file residuo.
+    if ($report -and (Test-Path $report)) {
+        Remove-Item -Path $report -Force -ErrorAction SilentlyContinue
+    }
 }
